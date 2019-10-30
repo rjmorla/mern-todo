@@ -43,7 +43,7 @@ export default class CreateTodo extends Component {
         console.log(`Todo Description: ${this.state.todo_description}`);
         console.log(`Todo Responsible: ${this.state.todo_responsible}`);
         console.log(`Todo Priority: ${this.state.todo_priority}`);
-        
+
         this.setState({
             todo_description: '',
             todo_responsible: '',
