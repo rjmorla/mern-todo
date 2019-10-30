@@ -11,26 +11,43 @@ const Todo = props => (
         <td>
             <Link to={"/edit/"+props.todo._id}>Edit</Link>
         </td>
+        <button onClick={ () =>
+            axios.delete('http://localhost:4000/todos/'+props.todo._id)
+                .then(() => {
+                        console.log("Deleted: " + props.todo._id);
+                        props.fetchTodos();
+                    })                    
+                .catch(err => console.log(err))
+        }
+        >x</button>
     </tr>
+    
 )
 export default class TodosList extends Component {
+
     constructor(props) {
         super(props);
         this.state = {todos: []};
     }
 
     componentDidMount() {
-        axios.get('http://localhost:4000/todos/')
-            .then(response => {
-                this.setState({todos: response.data});
-            })
-            .catch(function (error){
-                console.log(error);
-            })
-    }
+        this.interval = setInterval(() => 
+            axios.get('http://localhost:4000/todos/')
+                .then(res => {
+                    this.setState({ todos: res.data });
+                })
+                .catch(function(err){
+                    console.log(err);
+                }), 2000);
+        
+      }
+      componentWillUnmount() {
+        clearInterval(this.interval);
+      }
+
     todoList() {
-        return this.state.todos.map(function(currentTodo, i){
-            return <Todo todo={currentTodo} key={i} />;
+        return this.state.todos.map((currentTodo, i) => {
+            return <Todo todo={currentTodo} fetchTodos={this.fetchTodos}  key={i} />;
         })
     }
 
@@ -49,6 +66,7 @@ export default class TodosList extends Component {
                     </thead>
                     <tbody>
                         { this.todoList() }
+                        
                     </tbody>
                 </table>
             </div>

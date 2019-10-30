@@ -73,6 +73,7 @@ export default class EditTodo extends Component {
             .then(res => console.log(res.data));
             
         this.props.history.push('/');
+        
     }
     
     render() {
