@@ -5,21 +5,21 @@ import axios from 'axios';
 
 const Todo = props => (
     <tr>
-        <td>{props.todo.todo_description}</td>
-        <td>{props.todo.todo_responsible}</td>
-        <td>{props.todo.todo_priority}</td>
+        <td className={props.todo.todo_completed ? 'completed' : ''}>{props.todo.todo_description}</td>
+        <td className={props.todo.todo_completed ? 'completed' : ''}>{props.todo.todo_responsible}</td>
+        <td className={props.todo.todo_completed ? 'completed' : ''}>{props.todo.todo_priority}</td>
         <td>
             <Link to={"/edit/"+props.todo._id}>Edit</Link>
         </td>
+        <td>
+        {/* this is where the delete happens */}
         <button onClick={ () =>
             axios.delete('http://localhost:4000/todos/'+props.todo._id)
-                .then(() => {
-                        console.log("Deleted: " + props.todo._id);
-                        props.fetchTodos();
-                    })                    
+                .then(() => props.deleteItem(props.todo._id))                    
                 .catch(err => console.log(err))
         }
-        >x</button>
+        >Delete</button>
+        </td>   
     </tr>
     
 )
@@ -28,7 +28,13 @@ export default class TodosList extends Component {
     constructor(props) {
         super(props);
         this.state = {todos: []};
+
     }
+
+    deleteItemHandler = (id) => {
+        const updatedTodos = this.state.todos.filter(todo => todo.id !== id);
+        this.setState({todos: updatedTodos})
+       }
 
     componentDidMount() {
         this.interval = setInterval(() => 
@@ -45,12 +51,11 @@ export default class TodosList extends Component {
         clearInterval(this.interval);
       }
 
-    todoList() {
+      todoList() {
         return this.state.todos.map((currentTodo, i) => {
-            return <Todo todo={currentTodo} fetchTodos={this.fetchTodos}  key={i} />;
-        })
+           return <Todo todo={currentTodo} deleteItem={this.deleteItemHandler} key={i} />;
+       })
     }
-
     render() {
         return (
             <div>
